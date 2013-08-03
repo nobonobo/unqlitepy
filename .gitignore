@@ -2,6 +2,10 @@
 
 # C extensions
 *.so
+*.dylib
+
+*.o
+*.a
 
 # Packages
 *.egg
