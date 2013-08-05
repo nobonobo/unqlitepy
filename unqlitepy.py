@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from atexit import register as defered
+import sys
+import os
+
+libs = os.environ.get('LD_LIBRARY_PATH','').split(':')
+libs.append(os.path.dirname(__file__))
+os.environ['LD_LIBRARY_PATH'] = ':'.join(libs)
+
 from unqlite import *
 
 OutputCallback = CFUNCTYPE(UNCHECKED(c_int), POINTER(None), c_uint, POINTER(None))
@@ -183,7 +189,6 @@ class UnQLite(object):
     def __init__(self, uri, flags=UNQLITE_OPEN_CREATE):
         self.db = POINTER(unqlite)()
         unqlite_open(byref(self.db), uri, UNQLITE_OPEN_CREATE)
-        defered(self.close)
 
     def __enter__(self):
         return self
@@ -238,6 +243,9 @@ class UnQLite(object):
 
     def compile(self, code):
         return VM(self.db, code)
+
+    def compile_file(self, fpath):
+        return VMfromFile(self.db, fpath)
 
     def cursor(self):
         return Cursor(self.db)
