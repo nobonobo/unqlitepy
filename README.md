@@ -33,8 +33,10 @@ Finished processing dependencies for UnQLitePy==0.1.0
 
 ## Usage
 
+```python
 > from unqlitepy import UnQLite
 > db = UnQLite(':mem:')
 > db.store('hoge', 'value')
 > db.fetch('hoge')
 'value'
+```
