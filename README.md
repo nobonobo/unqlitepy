@@ -3,32 +3,29 @@ unqlitepy
 
 UnQLite for Python Binding
 
-## Build
+## Prerequire
 
 ```sh
-> python setup.py bdist_egg
+> sudo pip install ctypesgen
 ```
 
 ## Install
 
 ```sh
-> sudo python setup.py install
+> sudo pip install git+https://github.com/nobonobo/unqlitepy.git
+...
+Successfully installed UnQLitePy
+Cleaning up...
 ```
-
-or 
-
-```sh
-> sudo easy_install dist/UnQLitePy-0.1.0-py2.7.egg
-```
-
 or 
 
 ```sh
 > virtualenv sample
 > cd sample
-> bin/easy_install UnQLitePy-0.1.0-py2.7.egg
+> bin/pip install git+https://github.com/nobonobo/unqlitepy.git
 ...
-Finished processing dependencies for UnQLitePy==0.1.0
+Successfully installed UnQLitePy
+Cleaning up...
 ```
 
 ## Usage
