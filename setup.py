@@ -34,6 +34,6 @@ setup (name = 'UnQLitePy',
     py_modules = ['unqlite', 'unqlitepy'],
     include_package_data=True,
     data_files = [('', [dylib])],
-    setup_requires=['ctypesgen'],
+    requires=['ctypesgen'],
     zip_safe=False,
 )
