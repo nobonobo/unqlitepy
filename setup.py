@@ -17,12 +17,13 @@ class BuildWrap(build_py):
         subprocess.check_call(['make'])
         build_py.build_modules(self)
 
-setup (name = 'UnQLitePy',
+setup (name = 'unqlitepy',
     version = '0.1.0',
     description = 'UnQLite Binding for Python',
     author = 'Noboru Irieda',
     author_email = 'noboru@irieda.com',
     license = "BSD",
+    keywords=['database', 'kvs', 'unqlite'],
     url = 'https://github.com/nobonobo/unqlitepy',
     long_description = open('README.md').read(),
     cmdclass={"build_py": BuildWrap},
