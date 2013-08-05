@@ -5,24 +5,31 @@ UnQLite for Python Binding
 
 ## Build
 
+```sh
 > python setup.py bdist_egg
-
+```
 
 ## Install
 
+```sh
 > sudo python setup.py install
+```
 
 or 
 
+```sh
 > sudo easy_install dist/UnQLitePy-0.1.0-py2.7.egg
+```
 
 or 
 
+```sh
 > virtualenv sample
 > cd sample
 > bin/easy_install UnQLitePy-0.1.0-py2.7.egg
 ...
 Finished processing dependencies for UnQLitePy==0.1.0
+```
 
 ## Usage
 
