@@ -3,16 +3,10 @@ unqlitepy
 
 UnQLite for Python Binding
 
-## Pre require
-
-```sh
-> sudo pip install ctypesgen
-```
-
 ## Install
 
 ```sh
-> sudo pip install git+https://github.com/nobonobo/unqlitepy.git
+> sudo pip install unqlitepy
 ...
 Successfully installed UnQLitePy
 Cleaning up...

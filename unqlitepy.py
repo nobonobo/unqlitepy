@@ -4,9 +4,10 @@
 import sys
 import os
 
-libs = os.environ.get('LD_LIBRARY_PATH','').split(':')
-libs.append(os.path.dirname(__file__))
-os.environ['LD_LIBRARY_PATH'] = ':'.join(libs)
+if sys.platform=='linux2':
+    libs = os.environ.get('LD_LIBRARY_PATH','').split(':')
+    libs.append(os.path.dirname(__file__))
+    os.environ['LD_LIBRARY_PATH'] = ':'.join(libs)
 
 from unqlite import *
 
@@ -184,7 +185,6 @@ class Cursor(object):
         assert UNQLITE_OK == res, res
 
 class UnQLite(object):
-    FetchCallback = CFUNCTYPE(UNCHECKED(c_int), POINTER(None), c_uint, POINTER(None))
 
     def __init__(self, uri, flags=UNQLITE_OPEN_CREATE):
         self.db = POINTER(unqlite)()
@@ -213,6 +213,11 @@ class UnQLite(object):
     def append(self, key, value):
         res = unqlite_kv_append(self.db, key, len(key), value, len(value))
         assert UNQLITE_OK == res, res
+
+    def exists(self, key):
+        length = unqlite_int64(0)
+        res = unqlite_kv_fetch(self.db, key, len(key), None, byref(length))
+        return UNQLITE_OK == res
 
     def fetch(self, key, max=65536):
         buff = create_string_buffer(max)
@@ -250,6 +255,45 @@ class UnQLite(object):
     def cursor(self):
         return Cursor(self.db)
 
+    def mmap(self, fname):
+        return MMap(self.db, fname)
+
+    def random_num(self):
+        return unqlite_util_random_num(self.db)
+
+    def random_string(self, length):
+        buff = create_string_buffer(length+3)
+        res = unqlite_util_random_string(self.db, byref(buff), length)
+        assert UNQLITE_OK == res, res
+        return buff.raw[:length]
+
+class MMap(object):
+    def __init__(self, db, fname):
+        self.db = db
+        self.ptr = c_void_p()
+        self.size = unqlite_int64(os.stat(fname).st_size)
+        res = unqlite_util_load_mmaped_file(fname, byref(self.ptr), byref(self.size))
+        assert UNQLITE_OK == res, res
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        return False
+
+    def __len__(self):
+        return self.size
+
+    def close(self):
+        if self.ptr:
+            unqlite_util_release_mmaped_file(self.ptr, self.size)
+            self.ptr = None
+
+    def store(self, key):
+        res = unqlite_kv_store(self.db, key, len(key), self.ptr, self.size)
+        assert UNQLITE_OK == res, res
+
 def lib_config(self, verb, *args):
     res = unqlite_lib_config(self.vm, verb, *args)
     assert UNQLITE_OK == res, res
@@ -273,13 +317,15 @@ if __name__=='__main__':
             if i%5==0:
                 db.delete('etst{0}'.format(i))
 
-        @UnQLite.FetchCallback
+        @OutputCallback
         def f(output, outlen, udata):
             output = (c_char*outlen).from_address(output).raw
             print locals()
             return UNQLITE_OK
 
         db.fetch_cb('test0', f)
+        print 'test0', db.exists('test0')
+        print 'test100', db.exists('test100')
 
         sample = (
             "print 'hello!\n';"
@@ -312,3 +358,7 @@ if __name__=='__main__':
                 print repr(cursor.key()), repr(cursor.value())
                 cursor.next()
 
+        with db.mmap('Makefile') as mm:
+            mm.store('makefile')
+
+        db.fetch_cb('makefile', f)

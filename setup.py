@@ -18,7 +18,7 @@ class BuildWrap(build_py):
         build_py.build_modules(self)
 
 setup (name = 'unqlitepy',
-    version = '0.1.0',
+    version = '0.2.0',
     description = 'UnQLite Binding for Python',
     author = 'Noboru Irieda',
     author_email = 'noboru@irieda.com',
@@ -29,8 +29,12 @@ setup (name = 'unqlitepy',
     cmdclass={"build_py": BuildWrap},
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Topic :: Utilities",
+        "Topic :: Database",
         "License :: OSI Approved :: BSD License",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Operating System :: MacOS",
+
     ],
     py_modules = ['unqlite', 'unqlitepy'],
     include_package_data=True,
