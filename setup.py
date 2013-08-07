@@ -15,8 +15,8 @@ else:
 class InstallWrap(install):
     def run(self):
         install.run(self)
-        print self.install_base
-        subprocess.check_call(['make', '-C', 'unqlitepy'])
+        subprocess.check_call(['make', '-C', 'unqlitepy'],
+            cwd=self.install_lib)
 
 
 setup (name = 'unqlitepy',

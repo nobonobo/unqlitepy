@@ -5,9 +5,9 @@ import sys
 import os
 
 if sys.platform=='linux2':
-    libs = os.environ.get('LD_LIBRARY_PATH','').split(':')
+    libs = set(os.environ.get('LD_LIBRARY_PATH','').split(':'))
     libs.append(os.path.dirname(__file__))
-    os.environ['LD_LIBRARY_PATH'] = ':'.join(libs)
+    os.environ['LD_LIBRARY_PATH'] = ':'.join(libs).strip(':')
 
 from ._unqlite import *
 
