@@ -10,11 +10,11 @@ root = os.path.dirname(__file__)
 class InstallWrap(install):
     def run(self):
         subprocess.check_call(['make', '-C', 'unqlitepy'])
-        build_py.run(self)
+        install.run(self)
 
 
 setup (name = 'unqlitepy',
-    version = '0.2.0',
+    version = '0.3.0',
     description = 'UnQLite Binding for Python',
     author = 'Noboru Irieda',
     author_email = 'noboru@irieda.com',
