@@ -3,14 +3,20 @@ import sys
 import os
 from setuptools import setup, Extension
 import subprocess
-from distutils.command.install import install
+from setuptools.command.install import install
 
 root = os.path.dirname(__file__)
 
+if sys.platform=='darwin':
+    dllname = 'libunqlite.dylib'
+else:
+    dllname = 'libunqlite.so.1.0'
+
 class InstallWrap(install):
     def run(self):
-        subprocess.check_call(['make', '-C', 'unqlitepy'])
         install.run(self)
+        print self.install_base
+        subprocess.check_call(['make', '-C', 'unqlitepy'])
 
 
 setup (name = 'unqlitepy',
@@ -34,9 +40,11 @@ setup (name = 'unqlitepy',
     ],
     packages = ['unqlitepy'],
     include_package_data=True,
-    package_data = {
-        '': ['Makefile'],
-    },
+    #package_data = {
+    #    '': ['Makefile', dllname],
+    #},
     install_requires=['ctypesgen'],
+    setup_requires=['ctypesgen'],
+    requires=['ctypesgen'],
     zip_safe=False,
 )

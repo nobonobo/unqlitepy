@@ -9,7 +9,7 @@ if sys.platform=='linux2':
     libs.append(os.path.dirname(__file__))
     os.environ['LD_LIBRARY_PATH'] = ':'.join(libs)
 
-from unqlite import *
+from ._unqlite import *
 
 OutputCallback = CFUNCTYPE(UNCHECKED(c_int), POINTER(None), c_uint, POINTER(None))
 

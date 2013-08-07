@@ -14,14 +14,14 @@ endif
 all: build
 
 clean:
-	-rm unqlite.py
+	-rm _unqlite.py
 	-rm $(OUTPUTLIB)
 
-build: unqlite.py
+build: _unqlite.py
 
 $(OUTPUTLIB): unqlite.h unqlite.c
 	$(CC) -DUNQLITE_ENABLE_THREADS=1 -Wall -fPIC -c unqlite.c
 	$(CC) -shared $(LINKOPT) -o $(OUTPUTLIB) unqlite.o
 
-unqlite.py: $(OUTPUTLIB)
-	ctypesgen.py unqlite.h -L ./ -l unqlite -o unqlite.py
+_unqlite.py: $(OUTPUTLIB)
+	ctypesgen.py unqlite.h -L ./ -l unqlite -o _unqlite.py
