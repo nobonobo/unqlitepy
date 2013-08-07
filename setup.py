@@ -3,19 +3,15 @@ import sys
 import os
 from setuptools import setup, Extension
 import subprocess
-from distutils.command.build_py import build_py
+from distutils.command.install import install
 
-if sys.platform=='darwin':
-    dylib = 'libunqlite.dylib'
-else:
-    dylib = 'libunqlite.so.1.0'
+root = os.path.dirname(__file__)
 
-#root = os.path.dirname(__file__)
+class InstallWrap(install):
+    def run(self):
+        subprocess.check_call(['make', '-C', 'unqlitepy'])
+        build_py.run(self)
 
-class BuildWrap(build_py):
-    def build_modules(self):
-        subprocess.check_call(['make'])
-        build_py.build_modules(self)
 
 setup (name = 'unqlitepy',
     version = '0.2.0',
@@ -26,7 +22,7 @@ setup (name = 'unqlitepy',
     keywords=['database', 'kvs', 'unqlite'],
     url = 'https://github.com/nobonobo/unqlitepy',
     #long_description = open('README.md').read(),
-    cmdclass={"build_py": BuildWrap},
+    cmdclass={"install": InstallWrap},
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Database",
@@ -36,13 +32,11 @@ setup (name = 'unqlitepy',
         "Operating System :: MacOS",
 
     ],
-    py_modules = ['unqlite', 'unqlitepy'],
+    packages = ['unqlitepy'],
     include_package_data=True,
     package_data = {
         '': ['Makefile'],
     },
-    data_files = [('', [dylib])],
-    setup_requires=['ctypesgen'],
     install_requires=['ctypesgen'],
     zip_safe=False,
 )

@@ -1,6 +1,6 @@
 include README.md
 include LICENSE
-include Makefile
-include unqlite.c
-include unqlite.h
+include unqlitepy/Makefile
+include unqlitepy/unqlite.c
+include unqlitepy/unqlite.h
 

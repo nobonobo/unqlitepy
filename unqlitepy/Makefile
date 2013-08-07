@@ -9,9 +9,13 @@ LINKOPT=-Wl,-soname,libunqlite.so.1
 OUTPUTLIB=libunqlite.so.1.0
 endif
 
-.PHONY: all build
+.PHONY: all build clean
 
 all: build
+
+clean:
+	-rm unqlite.py
+	-rm $(OUTPUTLIB)
 
 build: unqlite.py
 
