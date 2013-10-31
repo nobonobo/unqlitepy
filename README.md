@@ -25,9 +25,11 @@ Cleaning up...
 ## Usage
 
 ```python
-from unqlitepy import UnQLite
+import unqlitepy
+from ctypes import c_char
 
-with UnQLite(':mem:') as db:
+
+with unqlitepy.UnQLite(':mem:') as db:
     db.store('test', 'hello!')
     print db.fetch('test') # -> hello!
     db.append('test', ' world!')
@@ -40,13 +42,15 @@ with UnQLite(':mem:') as db:
         if i%5==0:
             db.delete('etst{0}'.format(i))
 
-    @UnQLite.FetchCallback
+    @unqlitepy.OutputCallback
     def f(output, outlen, udata):
         output = (c_char*outlen).from_address(output).raw
         print locals()
-        return UNQLITE_OK
+        return unqlitepy.UNQLITE_OK
 
     db.fetch_cb('test0', f)
+    print 'test0', db.exists('test0')
+    print 'test100', db.exists('test100')
 
     sample = (
         "print 'hello!\n';"
