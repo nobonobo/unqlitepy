@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+from ctypes import c_int, pointer
 import sys
 import os
 
@@ -16,7 +17,7 @@ OutputCallback = CFUNCTYPE(UNCHECKED(c_int), POINTER(None), c_uint, POINTER(None
 class Value(object):
     is_types = ['int', 'float', 'bool', 'string', 'null', 'numeric',
         'callable', 'scalar', 'json_array', 'json_object', 'resource', 'empty']
-    to_types = ['int', 'bool', 'int64', 'double', 'string', 'resource']
+    to_types = ['int', 'bool', 'int64', 'double', 'resource']
     def __init__(self, vm, ptr):
         self.vm = vm
         self.ptr = ptr
@@ -35,6 +36,11 @@ class Value(object):
     for tp in to_types:
         exec("""def to_{0}(self):
             return unqlite_value_to_{0}(self.ptr)""".format(tp))
+
+    def to_string(self, bufsize=1024):
+        buf_ptr = pointer(c_int(bufsize))
+        return unqlite_value_to_string(self.ptr, buf_ptr)
+
     def set(self, val):
         if isinstance(val, int):
             res = unqlite_value_int(self.ptr, val)
@@ -118,7 +124,7 @@ class VMfromFile(VM):
 
 
 class Cursor(object):
-    
+
     def __init__(self, db):
         self.db = db
         self.cursor = POINTER(unqlite_kv_cursor)()
@@ -136,7 +142,7 @@ class Cursor(object):
         if self.cursor:
             unqlite_kv_cursor_release(self.db, self.cursor)
             self.cursor = None
-    
+
     def seek(self, key, flags=UNQLITE_CURSOR_MATCH_EXACT):
         res = unqlite_kv_cursor_seek(self.cursor, key, len(key), flags)
         assert UNQLITE_OK == res, res
@@ -161,7 +167,7 @@ class Cursor(object):
 
     def delete(self):
         return unqlite_kv_cursor_delete_entry(self.cursor)
-    
+
     def key(self, max=65536):
         buff = create_string_buffer(max)
         length = unqlite_int64(max)
@@ -341,6 +347,7 @@ if __name__=='__main__':
             "while( ($rec = db_fetch('users')) != NULL ){"
             "  print $rec; print '\n';"
             "}"
+            "$all_users = db_fetch_all('users');"
         )
 
         with db.compile(sample) as vm:
@@ -348,6 +355,9 @@ if __name__=='__main__':
             with vm.new_scalar() as sv, vm.new_array() as av:
                 print sv, sv.is_scalar()
                 print av, av.is_json_array()
+
+            all_users = vm.extract('all_users')
+            print all_users.to_string()
 
         db.fetch_cb('users', f)
 
