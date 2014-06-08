@@ -118,7 +118,7 @@ class VMfromFile(VM):
 
 
 class Cursor(object):
-    
+
     def __init__(self, db):
         self.db = db
         self.cursor = POINTER(unqlite_kv_cursor)()
@@ -136,7 +136,7 @@ class Cursor(object):
         if self.cursor:
             unqlite_kv_cursor_release(self.db, self.cursor)
             self.cursor = None
-    
+
     def seek(self, key, flags=UNQLITE_CURSOR_MATCH_EXACT):
         res = unqlite_kv_cursor_seek(self.cursor, key, len(key), flags)
         assert UNQLITE_OK == res, res
@@ -161,7 +161,7 @@ class Cursor(object):
 
     def delete(self):
         return unqlite_kv_cursor_delete_entry(self.cursor)
-    
+
     def key(self, max=65536):
         buff = create_string_buffer(max)
         length = unqlite_int64(max)
@@ -266,6 +266,15 @@ class UnQLite(object):
         res = unqlite_util_random_string(self.db, byref(buff), length)
         assert UNQLITE_OK == res, res
         return buff.raw[:length]
+
+    def __setitem__(self, key, value):
+        self.store(key, value)
+
+    def __getitem__(self, key):
+        return self.fetch(key)
+
+    def __delitem__(self, key):
+        self.delete(key)
 
 class MMap(object):
     def __init__(self, db, fname):
